@@ -5,7 +5,9 @@ import store from './store'
 import './registerServiceWorker'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
+import VueUploadComponent from 'vue-upload-component'
 
+Vue.component('file-upload', VueUploadComponent)
 Vue.use(Vuetify)
 
 Vue.config.productionTip = false

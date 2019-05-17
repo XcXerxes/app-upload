@@ -1,25 +1,24 @@
 <template>
   <v-layout justify-center align-center>
-    <vue-dropzone
-    :options="dropzoneOptions"
-    :useCustomSlot="true"
-    id="drop"
-    class="upload-dropzone"
-    @vdropzone-sending="sending"
-    @vdropzone-file-added="add"
-    @vdropzone-processing="processing"
-    @vdropzone-drop="drop"
+    <file-upload
+    ref="upload"
+    v-model="files"
+    accept=".ipa,.apk"
+    post-action="/post.method"
+    put-action="/put.method"
+    :drop="true"
+    @input-file="inputFile"
+    @input-filter="inputFilter"
+  >
+  <v-btn
+    large
+    color="info"
+    class="white--text"
     >
-      <v-container
-        md4
-        align-center
-        justify-center
-      class="info--text"
-    >
-      <v-icon right color="info" :style="{fontSize: '40px'}">cloud_upload</v-icon>
-      <span class="ml-2 headline font-weight-bold">上传应用</span>
-    </v-container>
-    </vue-dropzone>
+      上传应用
+      <v-icon right dark>cloud_upload</v-icon>
+    </v-btn>
+  </file-upload>
         <v-snackbar
       v-model="snackbar"
       color="error"
@@ -45,6 +44,7 @@ export default {
     vueDropzone
   },
   data: () => ({
+    files: [],
     snackbar: false,
     dropzoneOptions: {
       url: 'https://xb.net',
@@ -53,6 +53,18 @@ export default {
     }
   }),
   methods: {
+    // 过滤文件
+    inputFilter(newFile, oldFile, prevent) {
+      if (!/\.(ipa|apk)$/.test(newFile.name)) {
+        this.snackbar = true
+        return prevent()
+      }
+      console.log('filter=================', newFile)
+      // if (newFile)
+    },
+    inputFile (newFile, oldFile) {
+      console.log(newFile)
+    },
     upload () {
       this.$refs.uploadInput.click()
     },

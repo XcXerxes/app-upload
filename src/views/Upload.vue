@@ -1,35 +1,24 @@
 <template>
   <v-layout justify-center align-center>
     <file-upload
-    ref="upload"
-    v-model="files"
-    accept=".ipa,.apk"
-    post-action="http://localhost:9090/upload"
-    :drop="true"
-    @input-file="inputFile"
-    @input-filter="inputFilter"
-  >
-  <v-btn
-    large
-    color="info"
-    class="white--text"
+      ref="upload"
+      :value="files"
+      accept=".ipa, .apk"
+      post-action="http://localhost:9090/upload"
+      :drop="true"
+      @input="fileChange"
+      @input-file="inputFile"
+      @input-filter="inputFilter"
+      :data="fileParams"
     >
-      上传应用
-      <v-icon right dark>cloud_upload</v-icon>
-    </v-btn>
-  </file-upload>
-        <v-snackbar
-      v-model="snackbar"
-      color="error"
-      :timeout="6000"
-      top
-    >
+      <v-btn large color="info" class="white--text">
+        上传应用
+        <v-icon right dark>cloud_upload</v-icon>
+      </v-btn>
+    </file-upload>
+    <v-snackbar v-model="snackbar" color="error" :timeout="6000" top>
       请上传 APK、IPA文件
-      <v-btn
-        dark
-        flat
-        @click="snackbar = false"
-      >
+      <v-btn dark flat @click="snackbar = false">
         <v-icon>close</v-icon>
       </v-btn>
     </v-snackbar>
@@ -38,12 +27,16 @@
 <script>
 import vueDropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+import AppInfoParser from 'app-info-parser'
 export default {
   components: {
     vueDropzone
   },
   data: () => ({
     files: [],
+    fileParams: {
+      version: ''
+    },
     snackbar: false,
     dropzoneOptions: {
       url: 'https://xb.net',
@@ -61,8 +54,27 @@ export default {
       console.log('filter=================', newFile)
       // if (newFile)
     },
-    inputFile (newFile, oldFile) {
-      this.$refs.upload.active = true
+    async inputFile (newFile, oldFile) {
+      debugger
+      try {
+        if (!newFile.active) {
+          const parser = new AppInfoParser(newFile.file)
+          const result = await parser.parse()
+          if (result) {
+            console.log('cccc')
+            this.fileParams.name = result.application.label[0]
+            this.fileParams.version = result.versionName
+          }
+          this.$nextTick(() => {
+            this.$refs.upload.active = true
+          })
+        }
+      } catch (error) {
+        
+      }
+    },
+    fileChange (files) {
+      this.files = files
     },
     upload () {
       this.$refs.uploadInput.click()

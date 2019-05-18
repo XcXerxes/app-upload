@@ -26,7 +26,8 @@ module.exports = (sequelize, DataType) => {
       allowNull: false
     },
     downloadNum: {
-      type: DataType.INTEGER(16)
+      type: DataType.INTEGER(16),
+      defaultValue: 0
     }
   })
 }

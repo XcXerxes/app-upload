@@ -4,8 +4,7 @@
     ref="upload"
     v-model="files"
     accept=".ipa,.apk"
-    post-action="/post.method"
-    put-action="/put.method"
+    post-action="http://localhost:9090/upload"
     :drop="true"
     @input-file="inputFile"
     @input-filter="inputFilter"
@@ -63,7 +62,7 @@ export default {
       // if (newFile)
     },
     inputFile (newFile, oldFile) {
-      console.log(newFile)
+      this.$refs.upload.active = true
     },
     upload () {
       this.$refs.uploadInput.click()
